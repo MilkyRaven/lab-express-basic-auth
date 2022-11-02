@@ -2,6 +2,8 @@ const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 
+const User = require("../models/User.model");
+
 
 /* GET home page */
 router.get("/", (req, res, next) => {
@@ -19,10 +21,9 @@ try {
   const hash = bcrypt.hashSync(password, salt)
   await User.create({
     username ,
-    email,
     password: hash 
   })
-  res.redirect("index")
+  res.redirect("/")
 }catch (err){
   console.log(err)
 }
