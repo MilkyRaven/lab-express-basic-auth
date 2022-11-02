@@ -23,10 +23,33 @@ try {
     username ,
     password: hash 
   })
-  res.redirect("/")
+  res.redirect("/") 
 }catch (err){
   console.log(err)
 }
+})
+
+//login route
+
+router.get("/login", (req, res) => {
+  res.render("login")
+})
+
+router.post("/login", async (req, res)=> {
+  const {username, password} = req.body
+  try{
+    const userData = await User.findOne({username})
+    if (!userData){
+      res.render("/login", {errorMessage: "This username is not registered"})
+    } else if (bcrypt.compareSync(password, userData.password)){
+      //req.session.currentUser = userData
+      res.render("users/profile", userData)
+    } else {
+      res.render("login", { errorMessage: "Incorrect password"})
+    }
+  }
+  catch(err){
+    console.log(err)}
 })
 
 module.exports = router;
