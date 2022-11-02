@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
+const {isLoggedIn, isLoggedOut} = require("../middleware/route-guard.js")
 
 const User = require("../models/User.model");
 
@@ -10,7 +11,7 @@ router.get("/", (req, res, next) => {
   res.render("index");
 });
 
-router.get("/signup", (req, res, next) => {
+router.get("/signup", isLoggedOut, (req, res, next) => {
   res.render("signup")
 })
 
@@ -31,7 +32,7 @@ try {
 
 //login route
 
-router.get("/login", (req, res) => {
+router.get("/login", isLoggedOut, (req, res) => {
   res.render("login")
 })
 
@@ -45,7 +46,7 @@ router.post("/login", async (req, res)=> {
       res.render("/login", {errorMessage: "This username is not registered"})
     } else if (bcrypt.compareSync(password, userData.password)){
       req.session.currentUser = userData;
-      res.render("users/profile", userData)
+      res.render("users/main", userData)
       console.log("login was success")
     } else {
       res.render("login", { errorMessage: "Incorrect password"})
@@ -54,6 +55,14 @@ router.post("/login", async (req, res)=> {
   }
   catch(err){
     console.log(err)}
+})
+
+//secret page
+router.get("/users/main", isLoggedIn, (req, res) => {
+  res.render("users/main")
+})
+router.get("/users/private", isLoggedIn, (req, res) => {
+  res.render("users/private")
 })
 
 module.exports = router;
