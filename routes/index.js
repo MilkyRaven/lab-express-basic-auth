@@ -36,6 +36,7 @@ router.get("/login", (req, res) => {
 })
 
 router.post("/login", async (req, res)=> {
+  console.log(req.session)
   const {username, password} = req.body
   try{
     const userData = await User.findOne({username})
@@ -43,7 +44,7 @@ router.post("/login", async (req, res)=> {
       console.log("no user found")
       res.render("/login", {errorMessage: "This username is not registered"})
     } else if (bcrypt.compareSync(password, userData.password)){
-      //req.session.currentUser = userData
+      req.session.currentUser = userData;
       res.render("users/profile", userData)
       console.log("login was success")
     } else {
