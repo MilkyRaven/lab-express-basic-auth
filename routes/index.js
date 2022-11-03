@@ -8,7 +8,8 @@ const User = require("../models/User.model");
 
 /* GET home page */
 router.get("/", (req, res, next) => {
-  res.render("index");
+  const user = req.session.currentUser
+  res.render("index", user);
 });
 
 router.get("/signup", isLoggedOut, (req, res, next) => {
@@ -63,6 +64,18 @@ router.get("/users/main", isLoggedIn, (req, res) => {
 })
 router.get("/users/private", isLoggedIn, (req, res) => {
   res.render("users/private")
+})
+
+//logout route
+router.post("/logout", (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.log(err)
+    } else {
+      res.redirect("/")
+      console.log("Log out was a success")
+    }
+  })
 })
 
 module.exports = router;
